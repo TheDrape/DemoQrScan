@@ -9,8 +9,15 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white shadow-md rounded-2xl p-6 w-full max-w-md">
     <h1 class="text-xl font-semibold mb-4 text-center">Order Pickup Confirmation</h1>
-    <form id="pickupForm" class="space-y-4">
-      <input type="hidden" id="orderId" value="12345" /> <!-- Replace with dynamic order ID -->
+
+    <div id="codeEntry" class="space-y-4">
+      <label class="block text-sm font-medium mb-1 text-center">Enter Order Code</label>
+      <input type="text" id="manualOrderId" placeholder="e.g. 12345" class="w-full p-2 border rounded-xl" />
+      <button onclick="startWithCode()" class="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">Continue</button>
+    </div>
+
+    <form id="pickupForm" class="space-y-4 hidden">
+      <input type="hidden" id="orderId" />
 
       <div>
         <label class="block text-sm font-medium mb-1">Your Name</label>
@@ -36,6 +43,31 @@
   </div>
 
   <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function showFormWithOrderId(orderId) {
+      document.getElementById('orderId').value = orderId;
+      document.getElementById('codeEntry').classList.add('hidden');
+      document.getElementById('pickupForm').classList.remove('hidden');
+    }
+
+    function startWithCode() {
+      const code = document.getElementById('manualOrderId').value.trim();
+      if (code) {
+        showFormWithOrderId(code);
+      }
+    }
+
+    window.onload = () => {
+      const orderId = getQueryParam('orderId');
+      if (orderId) {
+        showFormWithOrderId(orderId);
+      }
+    }
+
     document.getElementById('pickupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
