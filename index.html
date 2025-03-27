@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pickup Confirmation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-md rounded-2xl p-6 w-full max-w-md">
+    <h1 class="text-xl font-semibold mb-4 text-center">Order Pickup Confirmation</h1>
+    <form id="pickupForm" class="space-y-4">
+      <input type="hidden" id="orderId" value="12345" /> <!-- Replace with dynamic order ID -->
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Your Name</label>
+        <input type="text" id="name" class="w-full p-2 border rounded-xl" required />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Company Name</label>
+        <input type="text" id="company" class="w-full p-2 border rounded-xl" required />
+      </div>
+
+      <div class="flex items-start space-x-2">
+        <input type="checkbox" id="acknowledge" required />
+        <label for="acknowledge" class="text-sm">I acknowledge I am accepting delivery of the order.</label>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">Confirm Pickup</button>
+    </form>
+
+    <div id="successMessage" class="hidden text-green-600 text-center mt-4">
+      Thank you! Your pickup has been recorded.
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('pickupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const data = {
+        orderId: document.getElementById('orderId').value,
+        name: document.getElementById('name').value,
+        company: document.getElementById('company').value,
+        acknowledged: document.getElementById('acknowledge').checked,
+        timestamp: new Date().toISOString()
+      };
+
+      // Mocked API call
+      console.log('Sending data:', data);
+
+      // Simulate success
+      await new Promise(r => setTimeout(r, 500));
+      document.getElementById('pickupForm').classList.add('hidden');
+      document.getElementById('successMessage').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
