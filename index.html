@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pickup Confirmation</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white shadow-md rounded-2xl p-6 w-full max-w-md">
@@ -14,8 +15,10 @@
       <label class="block text-sm font-medium mb-1 text-center">Scan QR Code or Enter Order Code</label>
 
       <div class="flex justify-center">
-        <button onclick="scanQRCode()" class="bg-gray-800 text-white px-4 py-2 rounded-xl mb-2 hover:bg-gray-900">Scan QR Code</button>
+        <button onclick="toggleScanner()" class="bg-gray-800 text-white px-4 py-2 rounded-xl mb-2 hover:bg-gray-900">Scan QR Code</button>
       </div>
+
+      <div id="qr-reader" class="hidden"></div>
 
       <input type="text" id="manualOrderId" placeholder="e.g. 12345" class="w-full p-2 border rounded-xl" />
       <button onclick="startWithCode()" class="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700">Continue</button>
@@ -66,11 +69,27 @@
       }
     }
 
-    function scanQRCode() {
-      // Simulated scan result for demo purposes
-      const simulatedOrderId = prompt("Simulated QR scan: enter order ID");
-      if (simulatedOrderId) {
-        showFormWithOrderId(simulatedOrderId);
+    function toggleScanner() {
+      const reader = document.getElementById('qr-reader');
+      reader.classList.toggle('hidden');
+      if (!reader.classList.contains('hidden')) {
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          qrCodeMessage => {
+            html5QrCode.stop();
+            showFormWithOrderId(qrCodeMessage);
+          },
+          errorMessage => {
+            console.log("QR Scan Error:", errorMessage);
+          }
+        ).catch(err => {
+          console.error("Unable to start scanning:", err);
+        });
       }
     }
 
