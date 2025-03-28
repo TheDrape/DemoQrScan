@@ -26,6 +26,8 @@
 
     <form id="pickupForm" class="space-y-4 hidden">
       <input type="hidden" id="orderId" />
+      <input type="hidden" id="latitude" />
+      <input type="hidden" id="longitude" />
 
       <div>
         <label class="block text-sm font-medium mb-1">Your Name</label>
@@ -47,6 +49,15 @@
 
     <div id="successMessage" class="hidden text-green-600 text-center mt-4">
       Thank you! Your pickup has been recorded.
+      <div class="text-sm text-left mt-4 p-4 bg-green-100 rounded-xl">
+        <p><strong>Order ID:</strong> <span id="resultOrderId"></span></p>
+        <p><strong>Name:</strong> <span id="resultName"></span></p>
+        <p><strong>Company:</strong> <span id="resultCompany"></span></p>
+        <p><strong>Acknowledged:</strong> <span id="resultAck"></span></p>
+        <p><strong>Timestamp:</strong> <span id="resultTime"></span></p>
+        <p><strong>Latitude:</strong> <span id="resultLat"></span></p>
+        <p><strong>Longitude:</strong> <span id="resultLong"></span></p>
+      </div>
     </div>
   </div>
 
@@ -93,11 +104,23 @@
       }
     }
 
+    function captureLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+        }, error => {
+          console.warn("Geolocation failed or denied:", error);
+        });
+      }
+    }
+
     window.onload = () => {
       const orderId = getQueryParam('orderId');
       if (orderId) {
         showFormWithOrderId(orderId);
       }
+      captureLocation();
     }
 
     document.getElementById('pickupForm').addEventListener('submit', async function(e) {
@@ -108,11 +131,22 @@
         name: document.getElementById('name').value,
         company: document.getElementById('company').value,
         acknowledged: document.getElementById('acknowledge').checked,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        latitude: document.getElementById('latitude').value,
+        longitude: document.getElementById('longitude').value
       };
 
       // Mocked API call
       console.log('Sending data:', data);
+
+      // Show confirmation result
+      document.getElementById('resultOrderId').textContent = data.orderId;
+      document.getElementById('resultName').textContent = data.name;
+      document.getElementById('resultCompany').textContent = data.company;
+      document.getElementById('resultAck').textContent = data.acknowledged ? 'Yes' : 'No';
+      document.getElementById('resultTime').textContent = data.timestamp;
+      document.getElementById('resultLat').textContent = data.latitude;
+      document.getElementById('resultLong').textContent = data.longitude;
 
       // Simulate success
       await new Promise(r => setTimeout(r, 500));
@@ -122,3 +156,4 @@
   </script>
 </body>
 </html>
+
